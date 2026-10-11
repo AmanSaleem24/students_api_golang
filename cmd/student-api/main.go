@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/AmanSaleem24/students-api/internal/config"
 	"github.com/AmanSaleem24/students-api/internal/http/handlers/students"
+	"github.com/AmanSaleem24/students-api/internal/storage/sqlite"
 )
 
 func main() {
@@ -19,9 +21,16 @@ func main() {
 	cfg := config.MustLoad()
 
 	//database setup
+
+	storage, e := sqlite.New(cfg)
+	if e != nil{
+		log.Fatal(e)
+	}
+	slog.Info("Storage initialised", slog.String("env", cfg.Env), slog.String("version", "1.0.0"))
+
 	//setup router
 	router := http.NewServeMux()
-	router.HandleFunc("POST /api/students", students.New())
+	router.HandleFunc("POST /api/students", students.New(storage))
 
 	//setup server
 	server := http.Server{
