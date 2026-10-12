@@ -41,8 +41,9 @@ func main() {
 	}
 
 	slog.Info("Server started", slog.String("address", cfg.HTTPServer.Addr))
-	// fmt.Printf("Server Started %s", cfg.HTTPServer.Addr=)
 
+
+	// graceful shutdown
 	done := make(chan os.Signal, 1)
 
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
